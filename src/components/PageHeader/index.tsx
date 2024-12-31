@@ -1,6 +1,6 @@
 import UserAvatar from "../UserAvatar"
 import Titulo from "../Title"
-import { useTheme } from "../../../domain/theme"
+import { useTheme } from "../../../domains/theme"
 import Theme from "../Theme"
 
 interface PageHeaderProps {

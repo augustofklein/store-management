@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useAuth } from "../../../domain/auth";
+import { useAuth } from "../../../domains/auth";
 import AuthInput from "@/components/Auth/AuthInput";
 
 export default function Authentication() {
 
     const { login } = useAuth()
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('augusto.klein')
+    const [password, setPassword] = useState('123@AugustO!789')
 
     return(
         <div className="flex h-screen items-center justify-center">

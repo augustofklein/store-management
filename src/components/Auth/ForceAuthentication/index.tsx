@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useEffect } from 'react'
-import { useAuth } from '../../../../domain/auth'
+import { useAuth } from '../../../../domains/auth'
 import loadingGif from '../../../../public/images/loadingGif.gif'
 
 interface ForceAuthenticationProps {

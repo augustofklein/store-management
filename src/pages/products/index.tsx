@@ -20,9 +20,8 @@ export default function Products() {
     };
 
     const fetchProducts = async () => {
-
         try {
-            const response = await fetch(`https://store-management-e2eme0hyfxe3buc9.brazilsouth-01.azurewebsites.net/v1/product/all`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/v1/product/all`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -51,10 +50,11 @@ export default function Products() {
 
     const handleEdit = async (productId: string, productDescription: string) => {
         try {
-            const response = await fetch(`${process.env.PUBLIC_URL_BACKEND_API}/products/${productId}`, {
-                method: 'PUT',
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/v1/product${productId}`, {
+                method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
                 },
                 body: JSON.stringify({ productDescription }),
             });
@@ -71,10 +71,11 @@ export default function Products() {
     
     const handleDelete = async (productId: string) => {
         try {
-            const response = await fetch(`${process.env.PUBLIC_URL_BACKEND_API}/v1/product/${productId}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/v1/product/${productId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
                 },
             });
     

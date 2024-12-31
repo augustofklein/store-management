@@ -1,5 +1,5 @@
 import ItemMenu from "@/ItemMenu";
-import { useAuth } from "../../../domain/auth";
+import { useAuth } from "../../../domains/auth";
 import { Entry, Exit, ExitIcon, HomeIcon, ProductIcon } from "../Icons";
 import Logo from "../Logo";
 

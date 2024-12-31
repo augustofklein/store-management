@@ -1,4 +1,4 @@
-import { useTheme } from "../../../domain/theme"
+import { useTheme } from "../../../domains/theme"
 import ForceAuthentication from "../Auth/ForceAuthentication"
 import Content from "../Content"
 import LateralMenu from "../LateralMenu"

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import Product from "../../../model/Product/type";
+import { useCallback, useState } from "react";
+import { Product } from "../../../model/Product/type";
+import { useProductService } from "../../../domains/product";
 
 interface ProductModalProps {
     openModal: boolean;
@@ -9,7 +10,9 @@ interface ProductModalProps {
 
 export default function ProductModal(props: ProductModalProps) {
 
-    const [formData, setFormData] = useState<Product>({id: '', description: '', stock: 0});
+    const { executeAddProduct } = useProductService();
+
+    const [formData, setFormData] = useState<Product>({id: '', barcode: '', description: '', stock: 0});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -19,24 +22,11 @@ export default function ProductModal(props: ProductModalProps) {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        
-        const response = await fetch(`${process.env.PUBLIC_URL_BACKEND_API}/products`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-    
-        if (response.ok) {
-            props.closeModal();
-            props.handleSubmit();
-        } else {
-            console.error('Failed to add product');
-        }
-    };
+    const handleSubmit = useCallback(async () => {
+        await executeAddProduct(formData);
+        props.closeModal();
+        props.handleSubmit();
+    }, [executeAddProduct, formData, props])
 
     if (!props.openModal) return null;
 
@@ -48,24 +38,34 @@ export default function ProductModal(props: ProductModalProps) {
                     <div className="mt-2 px-7 py-3">
                         <form onSubmit={handleSubmit}>
                             <div className="mb-2">
-                            <input
-                                type="text"
-                                name="id"
-                                placeholder="ID"
-                                value={formData.id}
-                                onChange={handleChange}
-                                className="px-3 py-2 border rounded w-full"
-                            />
+                                <input
+                                    type="text"
+                                    name="id"
+                                    placeholder="ID"
+                                    value={formData.id}
+                                    onChange={handleChange}
+                                    className="px-3 py-2 border rounded w-full"
+                                />
                             </div>
                             <div className="mb-2">
-                            <input
-                                type="text"
-                                name="description"
-                                placeholder="Description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                className="px-3 py-2 border rounded w-full"
-                            />
+                                <input
+                                    type="text"
+                                    name="barcode"
+                                    placeholder="Barcode"
+                                    value={formData.barcode}
+                                    onChange={handleChange}
+                                    className="px-3 py-2 border rounded w-full"
+                                />
+                            </div>
+                            <div className="mb-2">
+                                <input
+                                    type="text"
+                                    name="description"
+                                    placeholder="Description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    className="px-3 py-2 border rounded w-full"
+                                />
                             </div>
                             <div className="mb-2">
                                 <input

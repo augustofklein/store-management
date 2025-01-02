@@ -1,30 +1,27 @@
-export const useGetGroupData = () => {
-    const executeGetGroupDetails = async (): Promise<GroupDetailsResponse[]> => {
-      return await executeProcessGroupDetails();
+import { EditProduct, Product } from "../../model/Product/type";
+import { executeProcessAddProduct, executeProcessDeleteProduct, executeProcessEditProduct, executeProcessGetProducts } from "./service/product";
+
+export const useProductService = () => {
+    const executeGetProducts = async (): Promise<Product[]> => {
+      return await executeProcessGetProducts();
     };
-  
-    const executeGetGroupDatabases = async (
-      form: GroupDatabaseForm,
-    ): Promise<GroupDatabases[]> => {
-      return await executeProcessGetGroupDatabases(form);
-    };
-  
-    const executeGetGroupTables = async (
-      form: GroupTableForm,
-    ): Promise<GroupTables[]> => {
-      return await executeProcessGetGroupTables(form);
-    };
-  
-    const executeGetGroupProcedures = async (
-      form: GroupTableForm,
-    ): Promise<GroupProcedures[]> => {
-      return await executeProcessGetGroupProcedures(form);
-    };
+
+    const executeAddProduct = async (form: Product) => {
+      return await executeProcessAddProduct(form);
+    }
+
+    const executeEditProduct = async (form: EditProduct) => {
+      return await executeProcessEditProduct(form);
+    }
+
+    const executeDeleteProduct = async (id: string): Promise<void> => {
+      return await executeProcessDeleteProduct(id);
+    }
   
     return {
-      executeGetGroupDetails,
-      executeGetGroupDatabases,
-      executeGetGroupTables,
-      executeGetGroupProcedures,
+      executeGetProducts,
+      executeAddProduct,
+      executeEditProduct,
+      executeDeleteProduct
     };
   };

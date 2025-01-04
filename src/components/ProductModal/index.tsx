@@ -1,16 +1,13 @@
 import { useCallback, useState } from "react";
 import { Product } from "../../../model/Product/type";
-import { useProductService } from "../../../domains/product";
 
 interface ProductModalProps {
-    openModal: boolean;
-    closeModal: () => void;
-    handleSubmit: () => void;
+    productModal: boolean;
+    setAddProductModal: () => void;
+    handleSubmit: (form: Product) => void;
 }
 
-export default function ProductModal(props: ProductModalProps) {
-
-    const { executeAddProduct } = useProductService();
+const ProductModal: React.FC<ProductModalProps> = ({productModal, setAddProductModal, handleSubmit}) => {
 
     const [formData, setFormData] = useState<Product>({id: '', barcode: '', description: '', stock: 0});
 
@@ -22,13 +19,11 @@ export default function ProductModal(props: ProductModalProps) {
         });
     };
 
-    const handleSubmit = useCallback(async () => {
-        await executeAddProduct(formData);
-        props.closeModal();
-        props.handleSubmit();
-    }, [executeAddProduct, formData, props])
+    const handleSubmitOperaton = useCallback(() => {
+        handleSubmit(formData);
+    }, [formData, handleSubmit]);
 
-    if (!props.openModal) return null;
+    if(!productModal) return;
 
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
@@ -36,7 +31,7 @@ export default function ProductModal(props: ProductModalProps) {
                 <div className="mt-3 text-center">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">Add New Product</h3>
                     <div className="mt-2 px-7 py-3">
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmitOperaton}>
                             <div className="mb-2">
                                 <input
                                     type="text"
@@ -87,7 +82,7 @@ export default function ProductModal(props: ProductModalProps) {
                                 <button
                                     type="button"
                                     className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 mt-2"
-                                    onClick={props.closeModal}
+                                    onClick={setAddProductModal}
                                 >
                                     Cancel
                                 </button>
@@ -99,3 +94,4 @@ export default function ProductModal(props: ProductModalProps) {
         </div>
     );
 }
+export default ProductModal;

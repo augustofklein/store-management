@@ -8,34 +8,39 @@ import { useProductService } from "../../../domains/product";
 export default function Products() {
 
     const [products, setProducts] = useState<Product[]>();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [addProductModal, setAddProductModal] = useState(false);
 
-    const { executeGetProducts, executeDeleteProduct, executeEditProduct } = useProductService();
+    const { executeGetProducts, executeAddProduct, executeDeleteProduct, executeEditProduct } = useProductService();
 
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-    
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+    const handleAddProductModal = useCallback(() => {
+        setAddProductModal(current => !current);
+    }, []);
 
     const handleGetProducts = useCallback(async () => {
         const productsData = await executeGetProducts();
         setProducts(productsData);
     }, [executeGetProducts])
 
+    const handleAddProduct = useCallback(async (form: Product) => {
+        await executeAddProduct(form);
+        handleAddProductModal();
+        handleGetProducts();
+    }, [executeAddProduct, handleAddProductModal, handleGetProducts])
+
     const handleEditProduct = useCallback(async (id: string, description: string) => {
         await executeEditProduct({id, description});
-    }, [executeEditProduct])
+        handleGetProducts();
+    }, [executeEditProduct, handleGetProducts])
 
     const handleDeleteProduct = useCallback(async (id: string) => {
         await executeDeleteProduct(id);
-    }, [executeDeleteProduct])
+        handleGetProducts();
+    }, [executeDeleteProduct, handleGetProducts])
 
     useEffect(() => {
         handleGetProducts();
-    }, [handleGetProducts])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
   
     return (
         <Layout title="Products" subtitle="Aqui você irá gerenciar os seus produtos!">
@@ -43,7 +48,7 @@ export default function Products() {
                 <button className={`
                     bg-blue-500 hover:bg-blue-400
                     text-white rounded-lg px-4 py-3
-                `} onClick={openModal}>
+                `} onClick={handleAddProductModal}>
                     Add Product
                 </button>
                 <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -55,7 +60,7 @@ export default function Products() {
                         <p>No products available</p>
                     )}
                 </div>
-                <ProductModal openModal={isModalOpen} closeModal={closeModal} handleSubmit={handleGetProducts}/>
+                <ProductModal productModal={addProductModal} setAddProductModal={handleAddProductModal} handleSubmit={handleAddProduct}/>
             </div>
         </Layout>
     )

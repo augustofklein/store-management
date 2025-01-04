@@ -35,7 +35,7 @@ export const executeProcessAddProduct = async(form: Product): Promise<void> => {
     });
 
     if (!response.ok) {
-      console.error('Failed to delete product');
+      console.error('Failed to add product');
     }
   } catch(error: any) {
     throw error;
@@ -54,7 +54,7 @@ export const executeProcessEditProduct = async (form: EditProduct): Promise<void
     });
 
     if (!response.ok) {
-      console.error('Failed to delete product');
+      console.error('Failed to edit product');
     }
   } catch(error: any) {
     throw error;

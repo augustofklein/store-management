@@ -4,7 +4,7 @@ import AuthInput from "@/components/Auth/AuthInput";
 
 export default function Authentication() {
 
-    const { login } = useAuth()
+    const { login, loading } = useAuth()
 
     const [username, setUsername] = useState('augusto.klein')
     const [password, setPassword] = useState('123@AugustO!789')
@@ -35,11 +35,19 @@ export default function Authentication() {
 
                 <hr className="my-6 border-gray-300 w-full"/>
 
-                <button onClick={() => login(username, password)} className={`
-                    w-full bg-blue-500 hover:bg-blue-400
-                    text-white rounded-lg px-4 py-3
-                `}>
-                    Enter
+                <button
+                    onClick={() => login(username, password)}
+                    className={`
+                        w-full bg-blue-500 hover:bg-blue-400
+                        text-white rounded-lg px-4 py-3 flex justify-center items-center
+                    `}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white"/>
+                    ) : (
+                        "Enter"
+                    )}
                 </button>
             </div>
         </div>

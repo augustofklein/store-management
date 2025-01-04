@@ -23,12 +23,10 @@ function gerenciarCookie(token: string) {
     }
 }
 
-const notify = () => toast("This is a toast notification !");
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [loading, setLoading] = useState(false)
-    const [user, setUsername] = useState<string>();
+    const [user, setUser] = useState<string>();
 
     const handleShowErrorMessage = useCallback((message: string) => {
         toast.error(message);
@@ -65,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const data = await response.json();
         
             configSession(data.token);
-            setUsername(username);
+            setUser(username);
         
             route.push("/");
         } catch (error) {
@@ -83,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     async function logout() {
         try {
             setLoading(true)
-            setUsername("");
+            setUser("");
             await configSession("")
         } finally {
             setLoading(false)

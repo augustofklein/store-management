@@ -6,8 +6,8 @@ export default function Authentication() {
 
     const { login, loading } = useAuth()
 
-    const [username, setUsername] = useState<string>()
-    const [password, setPassword] = useState<string>()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
 
     return(
         <div className="flex h-screen items-center justify-center">

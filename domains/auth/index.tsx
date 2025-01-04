@@ -1,6 +1,8 @@
-import { useState, createContext, useContext } from 'react'
+import { useState, createContext, useContext, useCallback } from 'react'
 import route from 'next/router'
 import Cookies from 'js-cookie'
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 interface AuthContextProps {
     user?: string;
@@ -21,10 +23,16 @@ function gerenciarCookie(token: string) {
     }
 }
 
+const notify = () => toast("This is a toast notification !");
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [loading, setLoading] = useState(false)
     const [user, setUsername] = useState<string>();
+
+    const handleShowErrorMessage = useCallback((message: string) => {
+        toast.error(message);
+    }, []);
 
     async function configSession(token: string) {
         if(token !== "") {
@@ -36,37 +44,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function login(username: string, password: string) {
         try {
-            setLoading(true)
-
-            const authData = {
-                Username: username,
-                Password: password
-            }
-
-            const response = await fetch(`https://store-management-e2eme0hyfxe3buc9.brazilsouth-01.azurewebsites.net/v1/auth/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({username, password}),
-            });
+            setLoading(true);
+        
+            const response = await fetch(
+                `https://store-management-e2eme0hyfxe3buc9.brazilsouth-01.azurewebsites.net/v1/auth/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, password }),
+                }
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("Login failed:", errorData);
-                throw new Error("Failed to login");
+                throw new Error(errorData.message);
             }
-
+        
             const data = await response.json();
-
+        
             configSession(data.token);
             setUsername(username);
-
-            route.push('/')
-        } catch {
-            // TODO: Adicionar toast de erro
+        
+            route.push("/");
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred during login";
+            //TODO: VERIFY TO RETURN THE ERROR MESSAGE FROM ENDPOINT
+            handleShowErrorMessage('Username or password incorrect!');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
@@ -87,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             login,
             logout
         }}>
+            <ToastContainer />
             {children}
         </AuthContext.Provider>
     )

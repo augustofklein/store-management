@@ -20,8 +20,7 @@ const ProductCard: React.FC<ProductProps> = ({product, handleEdit, handleDelete}
                 <div className="font-bold text-xl mb-2">ID: {product.id}</div>
                 <div className="text-gray-700 text-xl mb-2">Description: {product.description}</div>
                 <div className="text-gray-700 text-base">Stock: {product.stock}</div>
-                <div className="mt-4 flex justify-between">
-                </div>
+                <div className="mt-4 flex justify-between"/>
             </div>
         </div>
     );

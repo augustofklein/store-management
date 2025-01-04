@@ -9,11 +9,16 @@ export default function Products() {
 
     const [products, setProducts] = useState<Product[]>();
     const [addProductModal, setAddProductModal] = useState(false);
+    const [editProductModal, setEditProductModal] = useState(false);
 
     const { executeGetProducts, executeAddProduct, executeDeleteProduct, executeEditProduct } = useProductService();
 
     const handleAddProductModal = useCallback(() => {
         setAddProductModal(current => !current);
+    }, []);
+
+    const handleEditProductModal = useCallback(() => {
+        setEditProductModal(current => !current);
     }, []);
 
     const handleGetProducts = useCallback(async () => {

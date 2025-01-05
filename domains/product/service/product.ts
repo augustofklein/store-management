@@ -1,3 +1,4 @@
+import { AUTH_COOKIE } from "@/utils/authConstant";
 import { EditProduct, Product } from "../../../model/Product/type";
 import Cookies from 'js-cookie'
 
@@ -7,7 +8,7 @@ export const executeProcessGetProducts = async (): Promise<Product[]> => {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
+            "Authorization": `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
     });
 
@@ -29,7 +30,7 @@ export const executeProcessAddProduct = async(form: Product): Promise<void> => {
       method: 'POST',
       headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
+          "Authorization": `Bearer ${Cookies.get(AUTH_COOKIE)}`,
       },
       body: JSON.stringify(form),
     });
@@ -48,7 +49,7 @@ export const executeProcessEditProduct = async (form: EditProduct): Promise<void
       method: 'PATCH',
       headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
+          "Authorization": `Bearer ${Cookies.get(AUTH_COOKIE)}`,
       },
       body: JSON.stringify(form.description),
     });
@@ -67,7 +68,7 @@ export const executeProcessDeleteProduct = async (id: string): Promise<void> => 
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${Cookies.get('store-management-auth')}`,
+            "Authorization": `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
     });
 

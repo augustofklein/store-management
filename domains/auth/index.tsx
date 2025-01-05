@@ -1,8 +1,9 @@
-import { useState, createContext, useContext, useCallback } from 'react'
+import { useState, createContext, useContext, useCallback, useMemo } from 'react'
 import route from 'next/router'
 import Cookies from 'js-cookie'
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { AUTH_COOKIE } from '@/utils/authConstant';
 
 interface AuthContextProps {
     user?: string;
@@ -15,18 +16,18 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 function gerenciarCookie(token: string) {
     if(token !== null) {
-        Cookies.set('store-management-auth', token,{
+        Cookies.set(`${AUTH_COOKIE}`, token, {
             expires: 7
         })
     } else {
-        Cookies.remove('store-management-auth')
+        Cookies.remove(`${AUTH_COOKIE}`)
     }
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [loading, setLoading] = useState(false)
-    const [user, setUser] = useState<string>();
+    const [user, setUser] = useState("");
 
     const handleShowErrorMessage = useCallback((message: string) => {
         toast.error(message);
@@ -40,12 +41,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
-    async function login(username: string, password: string) {
+    const login = useCallback(async (username: string, password: string) => {
         try {
             setLoading(true);
         
             const response = await fetch(
-                `https://store-management-e2eme0hyfxe3buc9.brazilsouth-01.azurewebsites.net/v1/auth/login`,
+                `${process.env.REACT_APP_BACKEND_API}/v1/auth/login`,
                 {
                     method: "POST",
                     headers: {
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
             configSession(data.token);
             setUser(username);
+            console.log(`LOGIN: ${user}`)
         
             route.push("/");
         } catch (error) {
@@ -76,25 +78,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }
+    }, [handleShowErrorMessage, user]);
 
-    async function logout() {
+    const logout = useCallback(async () => {
         try {
             setLoading(true)
             setUser("");
+            console.log(`LOGOUT: ${user}`)
             await configSession("")
         } finally {
             setLoading(false)
         }
-    }
+    }, [user]);
 
-    return(
-        <AuthContext.Provider value={{
+    const authMemo = useMemo(
+        () => ({
             user,
             loading,
             login,
             logout
-        }}>
+        }),
+        [loading, login, logout, user]
+    );
+
+    return(
+        <AuthContext.Provider value={authMemo}>
             <ToastContainer />
             {children}
         </AuthContext.Provider>

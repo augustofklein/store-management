@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Product } from "../../../model/Product/type";
 
 interface ProductModalProps {
@@ -19,10 +19,6 @@ const ProductModal: React.FC<ProductModalProps> = ({productModal, setAddProductM
         });
     };
 
-    const handleSubmitOperaton = useCallback(() => {
-        handleSubmit(formData);
-    }, [formData, handleSubmit]);
-
     if(!productModal) return;
 
     return (
@@ -31,7 +27,7 @@ const ProductModal: React.FC<ProductModalProps> = ({productModal, setAddProductM
                 <div className="mt-3 text-center">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">Add New Product</h3>
                     <div className="mt-2 px-7 py-3">
-                        <form onSubmit={handleSubmitOperaton}>
+                        <form onSubmit={() => handleSubmit(formData)}>
                             <div className="mb-2">
                                 <input
                                     type="text"

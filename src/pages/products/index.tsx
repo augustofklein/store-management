@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import Layout from "@/components/Layout";
 import ProductModal from "@/components/ProductModal";
 import { Product } from "../../../model/Product/type";
 import { useProductService } from "../../../domains/product";
 
-export default function Products() {
+const Products: React.FC = () => {
 
     const [products, setProducts] = useState<Product[]>();
     const [addProductModal, setAddProductModal] = useState(false);
@@ -27,8 +27,8 @@ export default function Products() {
     }, [executeGetProducts])
 
     const handleAddProduct = useCallback(async (form: Product) => {
-        await executeAddProduct(form);
         handleAddProductModal();
+        await executeAddProduct(form);
         handleGetProducts();
     }, [executeAddProduct, handleAddProductModal, handleGetProducts])
 
@@ -70,3 +70,4 @@ export default function Products() {
         </Layout>
     )
 }
+export default Products;

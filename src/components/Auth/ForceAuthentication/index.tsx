@@ -4,6 +4,8 @@ import Head from 'next/head'
 import { useEffect } from 'react'
 import { useAuth } from '../../../../domains/auth'
 import loadingGif from '../../../../public/images/loadingGif.gif'
+import { AUTH_COOKIE } from '@/utils/authConstant'
+import Cookies from 'js-cookie'
 
 interface ForceAuthenticationProps {
     children?:any
@@ -14,8 +16,9 @@ export default function ForceAuthentication(props: ForceAuthenticationProps) {
     const { loading, user } = useAuth()
     const router = useRouter();
 
+    //TODO: Adicionar validação para vencimento do token
     useEffect(() => {
-        if (!loading && !user) {
+        if (!Cookies.get(AUTH_COOKIE)) {
             router.push("/authentication");
         }
     }, [loading, user, router]);
@@ -27,7 +30,7 @@ export default function ForceAuthentication(props: ForceAuthenticationProps) {
                     <script
                         dangerouslySetInnerHTML={{
                             __html: `
-                                if(!document.cookie?.includes("store-management-auth")) {
+                                if(!document.cookie?.includes("${AUTH_COOKIE}")) {
                                     window.location.href = "/authentication"
                                 }  
                             `
@@ -54,7 +57,7 @@ export default function ForceAuthentication(props: ForceAuthenticationProps) {
     } else if (loading) {
         return rendirezeLoading()
     } else {
-        return null
+        return props.children;
     }
 
 }

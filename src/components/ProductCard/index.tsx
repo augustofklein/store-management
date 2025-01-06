@@ -8,7 +8,7 @@ interface ProductProps {
 
 const ProductCard: React.FC<ProductProps> = ({product, handleEdit, handleDelete}) => {
     return (
-        <div className="max-w-sm rounded overflow-hidden shadow-lg mt-4 mr-4">
+        <div className="max-w-xs rounded overflow-hidden shadow-lg mt-4 mr-4">
             <img className="w-full" src="../../../images/no-image.png" alt="Product Image"/>
             <div className="px-6 py-4">
                 <button onClick={() => handleEdit(product.id, product.description)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
@@ -18,9 +18,9 @@ const ProductCard: React.FC<ProductProps> = ({product, handleEdit, handleDelete}
                     Delete
                 </button>
                 <div className="font-bold text-xl mb-2">ID: {product.id}</div>
-                <div className="text-gray-700 text-xl mb-2">Description: {product.description}</div>
+                <div className="text-gray-700 text-xm mb-2">Barcode: {product.barcode}</div>
+                <div className="text-gray-700 text-xm mb-2">Description: {product.description}</div>
                 <div className="text-gray-700 text-base">Stock: {product.stock}</div>
-                <div className="mt-4 flex justify-between"/>
             </div>
         </div>
     );

@@ -65,7 +65,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
             configSession(data.token);
             setUser(username);
-            console.log(`LOGIN: ${user}`)
         
             route.push("/");
         } catch (error) {
@@ -84,7 +83,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setLoading(true)
             setUser("");
-            console.log(`LOGOUT: ${user}`)
             await configSession("")
         } finally {
             setLoading(false)

@@ -5,7 +5,7 @@ export interface Product {
     stock: number;
 }
 
-export interface EditProduct {
+export interface EditProductModel {
     id: string;
     description: string;
 }

@@ -10,17 +10,12 @@ const Products: React.FC = () => {
 
     const [products, setProducts] = useState<Product[]>();
     const [addProductModal, setAddProductModal] = useState(false);
-    const [editProductModal, setEditProductModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { executeGetProducts, executeAddProduct, executeDeleteProduct, executeEditProduct } = useProductService();
+    const { executeGetProducts, executeAddProduct, executeDeleteProduct } = useProductService();
 
     const handleAddProductModal = useCallback(() => {
         setAddProductModal(current => !current);
-    }, []);
-
-    const handleEditProductModal = useCallback(() => {
-        setEditProductModal(current => !current);
     }, []);
 
     const handleGetProducts = useCallback(async () => {
@@ -45,11 +40,6 @@ const Products: React.FC = () => {
         await executeAddProduct(form);
         handleGetProducts();
     }, [executeAddProduct, handleAddProductModal, handleGetProducts])
-
-    const handleEditProduct = useCallback(async (id: string, description: string) => {
-        await executeEditProduct({id, description});
-        handleGetProducts();
-    }, [executeEditProduct, handleGetProducts])
 
     const handleDeleteProduct = useCallback(async (id: string) => {
         await executeDeleteProduct(id);
@@ -83,7 +73,6 @@ const Products: React.FC = () => {
                                     key={product.id}
                                     product={product}
                                     handleDelete={handleDeleteProduct}
-                                    handleEdit={handleEditProduct}
                                 />
                             ))
                         ) : (

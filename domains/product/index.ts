@@ -1,4 +1,4 @@
-import { EditProduct, Product } from "../../model/Product/type";
+import { Product, EditProductModel } from "../../model/Product/type";
 import { executeProcessAddProduct, executeProcessDeleteProduct, executeProcessEditProduct, executeProcessGetProducts } from "./service/product";
 
 export const useProductService = () => {
@@ -10,7 +10,7 @@ export const useProductService = () => {
       return await executeProcessAddProduct(form);
     }
 
-    const executeEditProduct = async (form: EditProduct) => {
+    const executeEditProduct = async (form: EditProductModel) => {
       return await executeProcessEditProduct(form);
     }
 

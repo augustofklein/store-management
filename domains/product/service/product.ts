@@ -1,5 +1,5 @@
 import { AUTH_COOKIE } from "@/utils/authConstant";
-import { EditProduct, Product } from "../../../model/Product/type";
+import { EditProductModel, Product } from "../../../model/Product/type";
 import Cookies from 'js-cookie'
 
 export const executeProcessGetProducts = async (): Promise<Product[]> => {
@@ -43,15 +43,15 @@ export const executeProcessAddProduct = async(form: Product): Promise<void> => {
   }
 }
 
-export const executeProcessEditProduct = async (form: EditProduct): Promise<void> => {
+export const executeProcessEditProduct = async (form: EditProductModel): Promise<void> => {
   try{
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/v1/product${form.id}`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/v1/product/${form.id}`, {
       method: 'PATCH',
       headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${Cookies.get(AUTH_COOKIE)}`,
       },
-      body: JSON.stringify(form.description),
+      body: JSON.stringify({...form}),
     });
 
     if (!response.ok) {

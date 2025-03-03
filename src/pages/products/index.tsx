@@ -46,6 +46,10 @@ const Products: React.FC = () => {
         handleGetProducts();
     }, [executeDeleteProduct, handleGetProducts])
 
+    const handleEditProduct = useCallback(() => {
+        handleGetProducts();
+    }, [handleGetProducts]);
+
     useEffect(() => {
         handleGetProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,6 +77,7 @@ const Products: React.FC = () => {
                                     key={product.id}
                                     product={product}
                                     handleDelete={handleDeleteProduct}
+                                    handleEdit={handleEditProduct}
                                 />
                             ))
                         ) : (

@@ -6,9 +6,10 @@ import EditProduct from "../EditProduct";
 interface ProductProps {
     product: Product;
     handleDelete: (productId: string) => void;
+    handleEdit: () => void;
 }
 
-const ProductCard: React.FC<ProductProps> = ({product, handleDelete}) => {
+const ProductCard: React.FC<ProductProps> = ({product, handleDelete, handleEdit}) => {
     const [editProductModal, setEditProductModal] = useState(false);
 
     const { executeEditProduct } = useProductService();
@@ -20,7 +21,8 @@ const ProductCard: React.FC<ProductProps> = ({product, handleDelete}) => {
     const handleEditProduct = useCallback(async (data: EditProductModel) => {
         handleEditProductModal();
         await executeEditProduct(data);
-    }, [executeEditProduct, handleEditProductModal])
+        handleEdit();
+    }, [executeEditProduct, handleEdit, handleEditProductModal])
     
     return (
         <>

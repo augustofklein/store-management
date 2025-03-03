@@ -25,5 +25,4 @@ export default function AuthInput(props: AuthInputProps) {
             />
         </div>
     )
-
 }

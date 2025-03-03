@@ -36,7 +36,7 @@ const EditProduct: React.FC<EditProductInterface> = ({productData, editProductMo
                                     placeholder="ID"
                                     value={formData.id}
                                     onChange={handleChange}
-                                    className="px-3 py-2 border rounded w-full"
+                                    className="px-3 py-2 border rounded w-full bg-gray-200"
                                     readOnly
                                 />
                             </div>
@@ -47,7 +47,7 @@ const EditProduct: React.FC<EditProductInterface> = ({productData, editProductMo
                                     placeholder="Barcode"
                                     value={formData.barcode}
                                     onChange={handleChange}
-                                    className="px-3 py-2 border rounded w-full"
+                                    className="px-3 py-2 border rounded w-full bg-gray-200"
                                     readOnly
                                 />
                             </div>
@@ -68,7 +68,7 @@ const EditProduct: React.FC<EditProductInterface> = ({productData, editProductMo
                                     placeholder="Stock"
                                     value={formData.stock}
                                     onChange={handleChange}
-                                    className="px-3 py-2 border rounded w-full"
+                                    className="px-3 py-2 border rounded w-full bg-gray-200"
                                     readOnly
                                 />
                             </div>

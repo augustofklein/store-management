@@ -1,40 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🛍️ Store Management - Frontend
 
-## Getting Started
+## 📌 Overview
 
-First, run the development server:
+This project was initiated to digitally transform a small family-owned business focused on selling sports clothing and accessories. Until now, the business did not use any technological platforms for management — either due to a lack of initial investment or unfamiliarity with software solutions for small businesses.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The company operates entirely online, making sales through social media livestreams, door-to-door visits, and local sports events. Its main activity is the resale of clothing for cycling, gym workouts, running, and general physical activities. The business is based in the countryside of Serra Gaúcha, Brazil, and targets B2C customers. It is managed solely by the owner, with occasional help from family members, and currently has no hired staff.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 🔄 Implementation Process
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+After evaluating the company's management workflows, it became clear that a store management system would be essential to improve productivity and save time for the business owner. Currently, all processes — such as entering purchase invoices, managing inventory, and recording sales — are done manually using spreadsheets.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+While spreadsheets assist with basic control, they introduce the risk of data entry errors, time-consuming manual adjustments, and potential data loss.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+---
 
-## Learn More
+## 📋 Planning
 
-To learn more about Next.js, take a look at the following resources:
+To address these challenges, a web-based management tool was proposed. The initial goal is to implement the core operations necessary to run the business, with plans to gradually add new features over time.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The first version of the system will include the following functionalities:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Product registration  
+- Customer registration  
+- Supplier registration  
+- XML import of purchase invoices  
+- Management of sales invoices  
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 💻 Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The application will be fully web-based and responsive, designed to work seamlessly on both desktop and mobile devices (smartphones and tablets). The system is structured into two main parts:
+
+- **Frontend (this repository):** built with **React** and **Next.js**  
+- **Backend (API):** built with **C#** using the **.NET** platform  
+
+> ℹ️ This repository is dedicated solely to the **frontend** development.  
+> To follow the backend development, visit the API repository:  
+> [https://github.com/augustofklein/store-management-api](https://github.com/augustofklein/store-management-api)
+
+---
+
+## 🚧 Current Status
+
+The design prototype is currently being developed using **Figma**. Once completed, the interface screens will be included in this documentation and used to guide the next development steps.
+
+---

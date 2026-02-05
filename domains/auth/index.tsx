@@ -12,15 +12,18 @@ import "react-toastify/dist/ReactToastify.css";
 import { AUTH_COOKIE } from "@/utils/authConstant";
 
 interface AuthContextProps {
-  user?: string;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  loginByCompany: (
+    user: string,
+    password: string,
+    companyId: number
+  ) => Promise<void>;
   logout?: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-function gerenciarCookie(token: string) {
+function manageTokenCookie(token: string) {
   if (token !== null) {
     Cookies.set(`${AUTH_COOKIE}`, token, {
       expires: 7,
@@ -32,7 +35,6 @@ function gerenciarCookie(token: string) {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState("");
 
   const handleShowErrorMessage = useCallback((message: string) => {
     toast.error(message);
@@ -40,25 +42,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   async function configSession(token: string) {
     if (token !== "") {
-      gerenciarCookie(token);
+      manageTokenCookie(token);
     } else {
-      gerenciarCookie("");
+      manageTokenCookie("");
     }
   }
 
-  const login = useCallback(
-    async (username: string, password: string) => {
+  const loginByCompany = useCallback(
+    async (user: string, password: string, companyId: number) => {
       try {
         setLoading(true);
 
+        const credentials = btoa(`${user}:${password}`);
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_API}/v1/auth`,
+          `${process.env.REACT_APP_BACKEND_API}/v1/auth/token`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              Authorization: `Basic ${credentials}`,
+              "X-Company-Id": companyId.toString(),
             },
-            body: JSON.stringify({ username, password }),
           }
         );
 
@@ -69,11 +72,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const data = await response.json();
 
-        configSession(data.token);
-        setUser(username);
+        configSession(data.accessToken);
 
         route.push("/");
       } catch (error) {
+        console.log(error);
         const errorMessage =
           error instanceof Error
             ? error.message
@@ -84,27 +87,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading(false);
       }
     },
-    [handleShowErrorMessage, user]
+    [handleShowErrorMessage]
   );
 
   const logout = useCallback(async () => {
     try {
       setLoading(true);
-      setUser("");
       await configSession("");
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   const authMemo = useMemo(
     () => ({
-      user,
       loading,
-      login,
       logout,
+      loginByCompany,
     }),
-    [loading, login, logout, user]
+    [loading, logout, loginByCompany]
   );
 
   return (

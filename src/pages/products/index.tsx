@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Layout from "@/components/Layout";
+import ConfirmDelete from "@/components/ConfirmDelete";
 import { Product } from "../../../model/Product/type";
 import { useProductService } from "../../../domains/product";
 import ProductSkeleton from "@/components/Skeleton/Product";
@@ -8,7 +9,9 @@ const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
   const [addProductModal, setAddProductModal] = useState(false);
   const [editProductModal, setEditProductModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -22,14 +25,14 @@ const Products: React.FC = () => {
     setAddProductModal((current) => !current);
   }, []);
 
-  const handleEditProductModal = useCallback((product: Product) => {
-    setSelectedProduct(product);
-    setEditProductModal(true);
+  const handleOpenConfirmDelete = useCallback((product: Product) => {
+    setProductToDelete(product);
+    setConfirmDeleteOpen(true);
   }, []);
 
-  const handleCloseEditModal = useCallback(() => {
-    setEditProductModal(false);
-    setSelectedProduct(null);
+  const handleCancelConfirmDelete = useCallback(() => {
+    setProductToDelete(null);
+    setConfirmDeleteOpen(false);
   }, []);
 
   const handleGetProducts = useCallback(async () => {
@@ -51,7 +54,7 @@ const Products: React.FC = () => {
       await executeAddProduct(form);
       handleGetProducts();
     },
-    [executeAddProduct, handleAddProductModal, handleGetProducts]
+    [executeAddProduct, handleAddProductModal, handleGetProducts],
   );
 
   const handleDeleteProduct = useCallback(
@@ -59,17 +62,20 @@ const Products: React.FC = () => {
       await executeDeleteProduct(id);
       handleGetProducts();
     },
-    [executeDeleteProduct, handleGetProducts]
+    [executeDeleteProduct, handleGetProducts],
   );
 
-  const handleEditProduct = useCallback(
-    async (form: { id: string; description: string }) => {
-      handleCloseEditModal();
-      await executeEditProduct(form);
-      handleGetProducts();
-    },
-    [executeEditProduct, handleCloseEditModal, handleGetProducts]
-  );
+  const handleConfirmDelete = useCallback(async () => {
+    if (!productToDelete) return;
+    try {
+      setConfirmLoading(true);
+      await handleDeleteProduct(productToDelete.id);
+    } finally {
+      setConfirmLoading(false);
+      setProductToDelete(null);
+      setConfirmDeleteOpen(false);
+    }
+  }, [productToDelete, handleDeleteProduct]);
 
   useEffect(() => {
     handleGetProducts();
@@ -136,13 +142,13 @@ const Products: React.FC = () => {
                   <td className="py-3 px-6 text-center">
                     <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2">
                       <button
-                        onClick={() => handleEditProductModal(product)}
+                        onClick={() => {}}
                         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded w-full sm:w-auto"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleOpenConfirmDelete(product)}
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded w-full sm:w-auto"
                       >
                         Delete
@@ -155,6 +161,18 @@ const Products: React.FC = () => {
           </table>
         </div>
       )}
+      <ConfirmDelete
+        open={confirmDeleteOpen}
+        title="Delete product"
+        message={
+          productToDelete
+            ? `Delete "${productToDelete.description}"? This action cannot be undone.`
+            : undefined
+        }
+        onCancel={handleCancelConfirmDelete}
+        onConfirm={handleConfirmDelete}
+        loading={confirmLoading}
+      />
     </Layout>
   );
 };

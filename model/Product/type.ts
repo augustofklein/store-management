@@ -11,5 +11,8 @@ export interface Product {
 
 export interface EditProductModel {
   id: string;
+  skuId: string;
   description: string;
+  status: boolean;
+  price: number;
 }

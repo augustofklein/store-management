@@ -1,5 +1,5 @@
 import { AUTH_COOKIE } from "@/utils/authConstant";
-import { EditProductModel, Product } from "../../../model/Product/type";
+import { EditProductModel, Product } from "../../../model/product/type";
 import Cookies from "js-cookie";
 
 export const executeProcessGetProducts = async (): Promise<Product[]> => {
@@ -12,7 +12,7 @@ export const executeProcessGetProducts = async (): Promise<Product[]> => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -28,7 +28,7 @@ export const executeProcessGetProducts = async (): Promise<Product[]> => {
 };
 
 export const executeProcessAddProduct = async (
-  form: Product
+  form: Product,
 ): Promise<void> => {
   try {
     const response = await fetch(
@@ -40,7 +40,7 @@ export const executeProcessAddProduct = async (
           Authorization: `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
         body: JSON.stringify(form),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -52,7 +52,7 @@ export const executeProcessAddProduct = async (
 };
 
 export const executeProcessEditProduct = async (
-  form: EditProductModel
+  form: EditProductModel,
 ): Promise<void> => {
   try {
     const response = await fetch(
@@ -64,7 +64,7 @@ export const executeProcessEditProduct = async (
           Authorization: `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
         body: JSON.stringify({ ...form }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -76,7 +76,7 @@ export const executeProcessEditProduct = async (
 };
 
 export const executeProcessDeleteProduct = async (
-  id: string
+  id: string,
 ): Promise<void> => {
   try {
     const response = await fetch(
@@ -87,7 +87,7 @@ export const executeProcessDeleteProduct = async (
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get(AUTH_COOKIE)}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {

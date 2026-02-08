@@ -1,4 +1,4 @@
-import { Product, EditProductModel } from "../../model/Product/type";
+import { Product, EditProductModel } from "../../model/product/type";
 import {
   executeProcessAddProduct,
   executeProcessDeleteProduct,

@@ -3,6 +3,7 @@ import React from "react";
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "danger" | "muted";
   loading?: boolean;
+  icon?: React.ReactNode;
 };
 
 const variantClasses: Record<string, string> = {
@@ -14,6 +15,7 @@ const variantClasses: Record<string, string> = {
 const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   loading = false,
+  icon,
   children,
   className = "",
   disabled,
@@ -46,6 +48,13 @@ const Button: React.FC<ButtonProps> = ({
             d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
           />
         </svg>
+      ) : null}
+      {icon && !loading ? (
+        <span
+          className={`inline-flex items-center justify-center h-4 w-4 ${children ? "mr-2" : ""}`}
+        >
+          {icon}
+        </span>
       ) : null}
       {children}
     </button>

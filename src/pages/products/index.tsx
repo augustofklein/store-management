@@ -7,6 +7,9 @@ import { Product, EditProductModel } from "../../../model/product/type";
 import { useProductService } from "../../../domains/product";
 import ProductSkeleton from "@/components/Skeleton/Product";
 import EditProduct from "@/components/EditProduct";
+import { useToastMessageService } from "../../../domains/error-message";
+import { ToastContainer } from "react-toastify";
+import { ApiError, returnErrorMessage } from "@/utils/apiClient";
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
@@ -16,6 +19,7 @@ const Products: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showErrorMessage } = useToastMessageService();
 
   const {
     executeGetProducts,
@@ -50,8 +54,8 @@ const Products: React.FC = () => {
       const productsData = await executeGetProducts();
       setProducts(productsData);
       console.log(products);
-    } catch {
-      //TODO: Adicionar tratamento de erro
+    } catch (error) {
+      showErrorMessage(returnErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -59,17 +63,25 @@ const Products: React.FC = () => {
 
   const handleDeleteProduct = useCallback(
     async (id: string) => {
-      await executeDeleteProduct(id);
-      handleGetProducts();
+      try {
+        await executeDeleteProduct(id);
+        handleGetProducts();
+      } catch (error) {
+        showErrorMessage(returnErrorMessage(error));
+        return;
+      }
     },
     [executeDeleteProduct, handleGetProducts],
   );
 
   const handleConfirmDelete = useCallback(async () => {
     if (!productToDelete) return;
+
     try {
       setConfirmLoading(true);
       await handleDeleteProduct(productToDelete.id);
+    } catch (error) {
+      showErrorMessage(returnErrorMessage(error));
     } finally {
       setConfirmLoading(false);
       setProductToDelete(null);
@@ -92,6 +104,7 @@ const Products: React.FC = () => {
 
   return (
     <Layout title="Products" subtitle="Here you can manage the products!">
+      <ToastContainer />
       {loading ? (
         <ProductSkeleton />
       ) : (

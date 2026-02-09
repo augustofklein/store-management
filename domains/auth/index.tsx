@@ -10,13 +10,15 @@ import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AUTH_COOKIE } from "@/utils/authConstant";
+import { useToastMessageService } from "../error-message";
+import { returnErrorMessage } from "@/utils/apiClient";
 
 interface AuthContextProps {
   loading: boolean;
   loginByCompany: (
     user: string,
     password: string,
-    companyId: number
+    companyId: number,
   ) => Promise<void>;
   logout?: () => Promise<void>;
 }
@@ -35,10 +37,7 @@ function manageTokenCookie(token: string) {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
-
-  const handleShowErrorMessage = useCallback((message: string) => {
-    toast.error(message);
-  }, []);
+  const { showErrorMessage } = useToastMessageService();
 
   async function configSession(token: string) {
     if (token !== "") {
@@ -62,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               Authorization: `Basic ${credentials}`,
               "X-Company-Id": companyId.toString(),
             },
-          }
+          },
         );
 
         if (!response.ok) {
@@ -76,18 +75,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         route.push("/");
       } catch (error) {
-        console.log(error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred during login";
-        //TODO: VERIFY TO RETURN THE ERROR MESSAGE FROM ENDPOINT
-        handleShowErrorMessage("Username or password incorrect!");
+        showErrorMessage(returnErrorMessage(error));
       } finally {
         setLoading(false);
       }
     },
-    [handleShowErrorMessage]
+    [showErrorMessage],
   );
 
   const logout = useCallback(async () => {
@@ -105,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       logout,
       loginByCompany,
     }),
-    [loading, logout, loginByCompany]
+    [loading, logout, loginByCompany],
   );
 
   return (

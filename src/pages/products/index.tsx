@@ -15,6 +15,7 @@ import { useToastMessageService } from "../../../domains/error-message";
 import { ToastContainer } from "react-toastify";
 import { returnErrorMessage } from "@/utils/apiClient";
 import AddProductModal from "@/components/AddProductModal";
+import Table from "@/components/Table";
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
@@ -174,9 +175,10 @@ const Products: React.FC = () => {
           >
             + Add Product
           </Button>
-          <table className="min-w-full bg-white dark:bg-gray-700 shadow-md rounded">
-            <thead>
-              <tr className="bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+          <Table
+            wrapperClassName=""
+            headers={
+              <>
                 <th className="py-3 px-6 text-left hidden sm:table-cell">
                   SKU ID
                 </th>
@@ -188,56 +190,54 @@ const Products: React.FC = () => {
                 <th className="py-3 px-6 text-left">Stock</th>
                 <th className="py-3 px-6 text-left">Price</th>
                 <th className="py-3 px-6 text-center">Actions</th>
+              </>
+            }
+            body={products?.map((product) => (
+              <tr
+                key={product.id}
+                className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+              >
+                <td className="py-3 px-6 text-left hidden sm:table-cell">
+                  {product.skuId}
+                </td>
+                <td className="py-3 px-6 text-left">
+                  <span
+                    className={`py-1 px-3 rounded-full text-xs ${
+                      product.status
+                        ? "bg-green-200 text-green-600"
+                        : "bg-red-200 text-red-600"
+                    }`}
+                  >
+                    {product.status ? "Active" : "Inactive"}
+                  </span>
+                </td>
+                <td className="py-3 px-6 text-left hidden md:table-cell">
+                  {product.barcode}
+                </td>
+                <td className="py-3 px-6 text-left">{product.description}</td>
+                <td className="py-3 px-6 text-left">{product.stock}</td>
+                <td className="py-3 px-6 text-left">
+                  ${product.price.toFixed(2)}
+                </td>
+                <td className="py-3 px-6 text-center">
+                  <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2">
+                    <Button
+                      variant="primary"
+                      onClick={() => handleEditProductModal(product)}
+                      icon={<EditIconFA />}
+                      className="w-full sm:w-auto py-1 px-2"
+                    />
+                    <Button
+                      variant="danger"
+                      onClick={() => handleOpenConfirmDelete(product)}
+                      icon={<TrashIconFA />}
+                      className="w-full sm:w-auto py-1 px-2"
+                    />
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="text-gray-600 dark:text-gray-200 text-sm font-light">
-              {products?.map((product) => (
-                <tr
-                  key={product.id}
-                  className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <td className="py-3 px-6 text-left hidden sm:table-cell">
-                    {product.skuId}
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    <span
-                      className={`py-1 px-3 rounded-full text-xs ${
-                        product.status
-                          ? "bg-green-200 text-green-600"
-                          : "bg-red-200 text-red-600"
-                      }`}
-                    >
-                      {product.status ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="py-3 px-6 text-left hidden md:table-cell">
-                    {product.barcode}
-                  </td>
-                  <td className="py-3 px-6 text-left">{product.description}</td>
-                  <td className="py-3 px-6 text-left">{product.stock}</td>
-                  <td className="py-3 px-6 text-left">
-                    ${product.price.toFixed(2)}
-                  </td>
-                  <td className="py-3 px-6 text-center">
-                    <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2">
-                      <Button
-                        variant="primary"
-                        onClick={() => handleEditProductModal(product)}
-                        icon={<EditIconFA />}
-                        className="w-full sm:w-auto py-1 px-2"
-                      />
-                      <Button
-                        variant="danger"
-                        onClick={() => handleOpenConfirmDelete(product)}
-                        icon={<TrashIconFA />}
-                        className="w-full sm:w-auto py-1 px-2"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
+            ))}
+            footer={
               <tr>
                 <td colSpan={7} className="py-3 px-6">
                   <div className="flex items-center justify-between">
@@ -279,8 +279,8 @@ const Products: React.FC = () => {
                   </div>
                 </td>
               </tr>
-            </tfoot>
-          </table>
+            }
+          />
         </div>
       )}
       <AddProductModal

@@ -25,7 +25,7 @@ export default function Authentication() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getCompanies, username, password]);
 
   const handleSelectCompany = (company: Company) => {
     loginByCompany(username, password, company.companyId);

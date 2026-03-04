@@ -24,3 +24,12 @@ export interface EditProductModel {
   status: boolean;
   price: number;
 }
+
+export interface AddProductModel {
+  skuId: string;
+  status: boolean;
+  barcode: string;
+  description: string;
+  stock: number;
+  price: number;
+}

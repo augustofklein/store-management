@@ -20,8 +20,12 @@ const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({
   loading = false,
 }) => {
   return (
-    <Modal open={open} onClose={onCancel} disableBackdropClick={loading}>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+    <Modal
+      open={open}
+      onClose={onCancel}
+      disableBackdropClick={loading}
+      title={title}
+    >
       <p className="mb-4 text-sm">{message}</p>
 
       <div className="flex justify-end space-x-3">

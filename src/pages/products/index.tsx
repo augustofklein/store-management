@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import ConfirmDelete from "@/components/ConfirmDelete";
 import Button from "@/components/ui/Button";
@@ -6,18 +6,20 @@ import { EditIconFA, TrashIconFA } from "@/components/Icons/IconsFA";
 import {
   Product,
   EditProductModel,
-  ProductsResponse,
+  AddProductModel,
 } from "../../../model/product/type";
 import { useProductService } from "../../../domains/product";
 import ProductSkeleton from "@/components/Skeleton/Product";
 import EditProduct from "@/components/EditProduct";
 import { useToastMessageService } from "../../../domains/error-message";
 import { ToastContainer } from "react-toastify";
-import { ApiError, returnErrorMessage } from "@/utils/apiClient";
+import { returnErrorMessage } from "@/utils/apiClient";
+import AddProductModal from "@/components/AddProductModal";
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
   const [editProductModal, setEditProductModal] = useState(false);
+  const [addProductModal, setAddProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -26,6 +28,7 @@ const Products: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const PAGE_SIZE = 10;
   const [totalPages, setTotalPages] = useState<number>(1);
+  const didLoadProducts = useRef(false);
   const { showErrorMessage } = useToastMessageService();
 
   const {
@@ -37,22 +40,26 @@ const Products: React.FC = () => {
 
   const handleOpenConfirmDelete = useCallback((product: Product) => {
     setProductToDelete(product);
-    setConfirmDeleteOpen(true);
-  }, []);
-
-  const handleEditProductModal = useCallback((product: Product) => {
-    setSelectedProduct(product);
-    setEditProductModal(true);
-  }, []);
-
-  const handleCloseEditModal = useCallback(() => {
-    setSelectedProduct(null);
-    setEditProductModal(false);
+    setConfirmDeleteOpen((prev) => !prev);
   }, []);
 
   const handleCancelConfirmDelete = useCallback(() => {
     setProductToDelete(null);
-    setConfirmDeleteOpen(false);
+    setConfirmDeleteOpen((prev) => !prev);
+  }, []);
+
+  const handleEditProductModal = useCallback((product: Product) => {
+    setSelectedProduct(product);
+    setEditProductModal((prev) => !prev);
+  }, []);
+
+  const handleCloseEditModal = useCallback(() => {
+    setSelectedProduct(null);
+    setEditProductModal((prev) => !prev);
+  }, []);
+
+  const handleOpenAddProductModal = useCallback(() => {
+    setAddProductModal((prev) => !prev);
   }, []);
 
   const handleGetProducts = useCallback(async () => {
@@ -82,48 +89,76 @@ const Products: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [executeGetProducts, page]);
-
-  const handleDeleteProduct = useCallback(
-    async (id: string) => {
-      try {
-        await executeDeleteProduct(id);
-        handleGetProducts();
-      } catch (error) {
-        showErrorMessage(returnErrorMessage(error));
-        return;
-      }
-    },
-    [executeDeleteProduct, handleGetProducts],
-  );
+  }, [executeGetProducts, showErrorMessage, page]);
 
   const handleConfirmDelete = useCallback(async () => {
     if (!productToDelete) return;
 
     try {
       setConfirmLoading(true);
-      await handleDeleteProduct(productToDelete.id);
+      await executeDeleteProduct(productToDelete.id);
+      setConfirmDeleteOpen(false);
+      handleGetProducts();
     } catch (error) {
       showErrorMessage(returnErrorMessage(error));
     } finally {
       setConfirmLoading(false);
       setProductToDelete(null);
-      setConfirmDeleteOpen(false);
     }
-  }, [productToDelete, handleDeleteProduct]);
+  }, [
+    productToDelete,
+    handleGetProducts,
+    executeDeleteProduct,
+    showErrorMessage,
+  ]);
 
   const handleEditProduct = useCallback(
     async (form: EditProductModel) => {
-      handleCloseEditModal();
-      await executeEditProduct(form);
-      handleGetProducts();
+      try {
+        setConfirmLoading(true);
+        await executeEditProduct(form);
+        handleCloseEditModal();
+        handleGetProducts();
+      } catch (error) {
+        showErrorMessage(returnErrorMessage(error));
+      } finally {
+        setConfirmLoading(false);
+      }
     },
-    [executeEditProduct, handleCloseEditModal, handleGetProducts],
+    [
+      executeEditProduct,
+      handleCloseEditModal,
+      handleGetProducts,
+      showErrorMessage,
+    ],
+  );
+
+  const handleAddProduct = useCallback(
+    async (form: AddProductModel) => {
+      try {
+        setConfirmLoading(true);
+        await executeAddProduct(form);
+        handleOpenAddProductModal();
+        handleGetProducts();
+      } catch (error) {
+        showErrorMessage(returnErrorMessage(error));
+      } finally {
+        setConfirmLoading(false);
+      }
+    },
+    [
+      executeAddProduct,
+      handleGetProducts,
+      handleOpenAddProductModal,
+      showErrorMessage,
+    ],
   );
 
   useEffect(() => {
+    if (didLoadProducts.current) return;
+    didLoadProducts.current = true;
     handleGetProducts();
-  }, []);
+  }, [handleGetProducts]);
 
   return (
     <Layout title="Products" subtitle="Here you can manage the products!">
@@ -132,6 +167,13 @@ const Products: React.FC = () => {
         <ProductSkeleton />
       ) : (
         <div className="overflow-x-auto">
+          <Button
+            variant="primary"
+            onClick={() => handleOpenAddProductModal()}
+            className="mb-4"
+          >
+            + Add Product
+          </Button>
           <table className="min-w-full bg-white dark:bg-gray-700 shadow-md rounded">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
@@ -241,6 +283,12 @@ const Products: React.FC = () => {
           </table>
         </div>
       )}
+      <AddProductModal
+        addProductModal={addProductModal}
+        setAddProductModal={handleOpenAddProductModal}
+        handleSubmit={handleAddProduct}
+        processLoading={confirmLoading}
+      />
       <ConfirmDelete
         open={confirmDeleteOpen}
         title="Delete product"
@@ -259,6 +307,7 @@ const Products: React.FC = () => {
           editProductModal={editProductModal}
           setEditProductModal={handleCloseEditModal}
           handleSubmit={handleEditProduct}
+          processLoading={confirmLoading}
         />
       )}
     </Layout>

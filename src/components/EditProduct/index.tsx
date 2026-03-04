@@ -9,6 +9,7 @@ interface EditProductInterface {
   editProductModal: boolean;
   setEditProductModal: () => void;
   handleSubmit: (form: EditProductModel) => void;
+  processLoading: boolean;
 }
 
 const EditProduct: React.FC<EditProductInterface> = ({
@@ -16,6 +17,7 @@ const EditProduct: React.FC<EditProductInterface> = ({
   editProductModal,
   setEditProductModal,
   handleSubmit,
+  processLoading,
 }) => {
   const [formData, setFormData] = useState<EditProductModel>({
     id: productData.id,
@@ -48,11 +50,9 @@ const EditProduct: React.FC<EditProductInterface> = ({
       open={editProductModal}
       onClose={setEditProductModal}
       disableBackdropClick={false}
+      title="Edit Product"
     >
       <div>
-        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
-          Edit Product
-        </h3>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -144,6 +144,8 @@ const EditProduct: React.FC<EditProductInterface> = ({
               variant="primary"
               className="w-full"
               icon={<CheckIconFA />}
+              loading={processLoading}
+              disabled={processLoading}
             >
               Edit Product
             </Button>
@@ -152,6 +154,8 @@ const EditProduct: React.FC<EditProductInterface> = ({
               variant="muted"
               className="w-full"
               onClick={setEditProductModal}
+              loading={processLoading}
+              disabled={processLoading}
             >
               Cancel
             </Button>

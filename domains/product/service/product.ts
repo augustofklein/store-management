@@ -1,4 +1,5 @@
 import {
+  AddProductModel,
   EditProductModel,
   Product,
   ProductsResponse,
@@ -19,7 +20,7 @@ export const executeProcessGetProducts = async (
 };
 
 export const executeProcessAddProduct = async (
-  form: Product,
+  form: AddProductModel,
 ): Promise<void> => {
   await apiFetch<void>(
     "/v1/product",

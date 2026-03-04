@@ -2,6 +2,7 @@ import {
   Product,
   EditProductModel,
   ProductsResponse,
+  AddProductModel,
 } from "../../model/product/type";
 import {
   executeProcessAddProduct,
@@ -18,7 +19,7 @@ export const useProductService = () => {
     return await executeProcessGetProducts(page, pageSize);
   };
 
-  const executeAddProduct = async (form: Product) => {
+  const executeAddProduct = async (form: AddProductModel) => {
     return await executeProcessAddProduct(form);
   };
 

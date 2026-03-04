@@ -1,4 +1,8 @@
-import { Product, EditProductModel } from "../../model/product/type";
+import {
+  Product,
+  EditProductModel,
+  ProductsResponse,
+} from "../../model/product/type";
 import {
   executeProcessAddProduct,
   executeProcessDeleteProduct,
@@ -7,8 +11,11 @@ import {
 } from "./service/product";
 
 export const useProductService = () => {
-  const executeGetProducts = async (): Promise<Product[]> => {
-    return await executeProcessGetProducts();
+  const executeGetProducts = async (
+    page?: number,
+    pageSize?: number,
+  ): Promise<ProductsResponse> => {
+    return await executeProcessGetProducts(page, pageSize);
   };
 
   const executeAddProduct = async (form: Product) => {

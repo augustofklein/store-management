@@ -1,8 +1,21 @@
-import { EditProductModel, Product } from "../../../model/product/type";
+import {
+  EditProductModel,
+  Product,
+  ProductsResponse,
+} from "../../../model/product/type";
 import { apiFetch } from "@/utils/apiClient";
 
-export const executeProcessGetProducts = async (): Promise<Product[]> => {
-  return await apiFetch<Product[]>("/v1/product");
+export const executeProcessGetProducts = async (
+  page?: number,
+  pageSize?: number,
+): Promise<ProductsResponse> => {
+  const params = new URLSearchParams();
+  if (page !== undefined) params.append("pageNumber", String(page));
+  if (pageSize !== undefined) params.append("pageSize", String(pageSize));
+  const url = params.toString()
+    ? `/v1/product?${params.toString()}`
+    : "/v1/product";
+  return await apiFetch<ProductsResponse>(url);
 };
 
 export const executeProcessAddProduct = async (

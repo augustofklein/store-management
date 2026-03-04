@@ -9,6 +9,14 @@ export interface Product {
   price: number;
 }
 
+export interface ProductsResponse {
+  items: Product[];
+  totalCount: number;
+  totalPages: number;
+  pageNumber: number;
+  pageSize: number;
+}
+
 export interface EditProductModel {
   id: string;
   skuId: string;

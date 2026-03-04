@@ -3,7 +3,11 @@ import Layout from "@/components/Layout";
 import ConfirmDelete from "@/components/ConfirmDelete";
 import Button from "@/components/ui/Button";
 import { EditIconFA, TrashIconFA } from "@/components/Icons/IconsFA";
-import { Product, EditProductModel } from "../../../model/product/type";
+import {
+  Product,
+  EditProductModel,
+  ProductsResponse,
+} from "../../../model/product/type";
 import { useProductService } from "../../../domains/product";
 import ProductSkeleton from "@/components/Skeleton/Product";
 import EditProduct from "@/components/EditProduct";
@@ -19,6 +23,9 @@ const Products: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const PAGE_SIZE = 10;
+  const [totalPages, setTotalPages] = useState<number>(1);
   const { showErrorMessage } = useToastMessageService();
 
   const {
@@ -51,15 +58,31 @@ const Products: React.FC = () => {
   const handleGetProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const productsData = await executeGetProducts();
-      setProducts(productsData);
-      console.log(products);
+      const res = await executeGetProducts(page, PAGE_SIZE);
+      const items = res?.items ?? [];
+      const totalPagesFromRes =
+        res?.totalPages ??
+        Math.max(1, Math.ceil((res?.totalCount ?? 0) / PAGE_SIZE));
+
+      // If server returned a different current page, sync it
+      if (res?.pageNumber && res.pageNumber !== page) {
+        setPage(res.pageNumber);
+      }
+
+      if (items.length === 0 && page > 1) {
+        setPage(page - 1);
+        return res;
+      }
+
+      setProducts(items);
+      setTotalPages(Math.max(1, totalPagesFromRes));
+      return res;
     } catch (error) {
       showErrorMessage(returnErrorMessage(error));
     } finally {
       setLoading(false);
     }
-  }, [executeGetProducts]);
+  }, [executeGetProducts, page]);
 
   const handleDeleteProduct = useCallback(
     async (id: string) => {
@@ -172,6 +195,49 @@ const Products: React.FC = () => {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={7} className="py-3 px-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-600 dark:text-gray-200">
+                      Page {page} of {totalPages}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="muted"
+                        onClick={() => setPage(1)}
+                        disabled={page === 1}
+                      >
+                        {"<<"}
+                      </Button>
+                      <Button
+                        variant="muted"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                      >
+                        {"<"}
+                      </Button>
+                      <Button
+                        variant="muted"
+                        onClick={() =>
+                          setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={page >= totalPages}
+                      >
+                        {">"}
+                      </Button>
+                      <Button
+                        variant="muted"
+                        onClick={() => setPage(totalPages)}
+                        disabled={page === totalPages}
+                      >
+                        {">>"}
+                      </Button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       )}

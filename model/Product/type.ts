@@ -1,3 +1,5 @@
+import { PageInfo } from "../general/type";
+
 export interface Product {
   id: string;
   number: string;
@@ -9,12 +11,8 @@ export interface Product {
   price: number;
 }
 
-export interface ProductsResponse {
+export interface ProductsResponse extends PageInfo {
   items: Product[];
-  totalCount: number;
-  totalPages: number;
-  pageNumber: number;
-  pageSize: number;
 }
 
 export interface EditProductModel {

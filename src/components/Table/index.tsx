@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Button from "../ui/Button";
+import { PageInfo } from "../../../model/general/type";
+import { TABLE_PAGE_SIZE } from "@/constants";
 
 interface TableProps {
   headers: React.ReactNode;
   body: React.ReactNode;
-  footer?: React.ReactNode;
   tableClassName?: string;
   wrapperClassName?: string;
+  pageInfo: PageInfo;
 }
 
 interface TableColumnHeaderProps {
@@ -75,10 +78,19 @@ export const TableBooleanBadge: React.FC<TableBooleanBadgeProps> = ({
 const Table: React.FC<TableProps> = ({
   headers,
   body,
-  footer,
   tableClassName = "",
   wrapperClassName = "overflow-x-auto",
+  pageInfo,
 }) => {
+  const [page, setPage] = useState<number>(pageInfo.pageNumber);
+  const totalPages =
+    pageInfo.totalPages ??
+    Math.max(1, Math.ceil((pageInfo.totalCount ?? 0) / TABLE_PAGE_SIZE));
+
+  useEffect(() => {
+    setPage(pageInfo.pageNumber);
+  }, [pageInfo.pageNumber]);
+
   return (
     <div className={wrapperClassName}>
       <table
@@ -92,7 +104,47 @@ const Table: React.FC<TableProps> = ({
         <tbody className="text-gray-600 dark:text-gray-200 text-sm font-light">
           {body}
         </tbody>
-        {footer && <tfoot>{footer}</tfoot>}
+        <tfoot>
+          <tr>
+            <td colSpan={7} className="py-3 px-6">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600 dark:text-gray-200">
+                  Page {page} of {totalPages}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="muted"
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                  >
+                    {"<<"}
+                  </Button>
+                  <Button
+                    variant="muted"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    {"<"}
+                  </Button>
+                  <Button
+                    variant="muted"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                  >
+                    {">"}
+                  </Button>
+                  <Button
+                    variant="muted"
+                    onClick={() => setPage(totalPages)}
+                    disabled={page === totalPages}
+                  >
+                    {">>"}
+                  </Button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   );

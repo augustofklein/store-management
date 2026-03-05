@@ -21,7 +21,7 @@ import Table, {
   TableColumnHeader,
   TableRow,
 } from "@/components/Table";
-import { TABLE_PAGE_SIZE } from "@/constants";
+import { PageInfo } from "../../../model/general/type";
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
@@ -32,9 +32,13 @@ const Products: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
   const didLoadProducts = useRef(false);
+  const [pageInfo, setPageInfo] = useState<PageInfo>({
+    totalCount: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 10,
+  });
   const { showErrorMessage } = useToastMessageService();
 
   const {
@@ -71,31 +75,30 @@ const Products: React.FC = () => {
   const handleGetProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await executeGetProducts(page, TABLE_PAGE_SIZE);
+      const res = await executeGetProducts();
       const items = res?.items ?? [];
-      const totalPagesFromRes =
-        res?.totalPages ??
-        Math.max(1, Math.ceil((res?.totalCount ?? 0) / TABLE_PAGE_SIZE));
 
-      // If server returned a different current page, sync it
-      if (res?.pageNumber && res.pageNumber !== page) {
-        setPage(res.pageNumber);
-      }
-
-      if (items.length === 0 && page > 1) {
-        setPage(page - 1);
-        return res;
-      }
+      const pageSize = res?.pageSize ?? items.length ?? 1;
+      const totalCount = res?.totalCount ?? items.length ?? 0;
+      const totalPages = res?.totalPages ?? res.totalPages ?? 0;
+      const pageNumber = res?.pageNumber ?? res.pageNumber ?? 1;
+      const pageInfoDetails: PageInfo = {
+        totalCount,
+        totalPages,
+        pageNumber,
+        pageSize,
+      };
 
       setProducts(items);
-      setTotalPages(Math.max(1, totalPagesFromRes));
+      setPageInfo(pageInfoDetails);
+
       return res;
     } catch (error) {
       showErrorMessage(returnErrorMessage(error));
     } finally {
       setLoading(false);
     }
-  }, [executeGetProducts, showErrorMessage, page]);
+  }, [executeGetProducts, showErrorMessage]);
 
   const handleConfirmDelete = useCallback(async () => {
     if (!productToDelete) return;
@@ -181,6 +184,7 @@ const Products: React.FC = () => {
             + Add Product
           </Button>
           <Table
+            pageInfo={pageInfo}
             wrapperClassName=""
             headers={
               <>
@@ -231,49 +235,6 @@ const Products: React.FC = () => {
                 </TableColumnCell>
               </TableRow>
             ))}
-            footer={
-              <tr>
-                <td colSpan={7} className="py-3 px-6">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600 dark:text-gray-200">
-                      Page {page} of {totalPages}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="muted"
-                        onClick={() => setPage(1)}
-                        disabled={page === 1}
-                      >
-                        {"<<"}
-                      </Button>
-                      <Button
-                        variant="muted"
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                      >
-                        {"<"}
-                      </Button>
-                      <Button
-                        variant="muted"
-                        onClick={() =>
-                          setPage((p) => Math.min(totalPages, p + 1))
-                        }
-                        disabled={page >= totalPages}
-                      >
-                        {">"}
-                      </Button>
-                      <Button
-                        variant="muted"
-                        onClick={() => setPage(totalPages)}
-                        disabled={page === totalPages}
-                      >
-                        {">>"}
-                      </Button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            }
           />
         </div>
       )}

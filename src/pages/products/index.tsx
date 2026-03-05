@@ -15,7 +15,13 @@ import { useToastMessageService } from "../../../domains/error-message";
 import { ToastContainer } from "react-toastify";
 import { returnErrorMessage } from "@/utils/apiClient";
 import AddProductModal from "@/components/AddProductModal";
-import Table from "@/components/Table";
+import Table, {
+  TableBooleanBadge,
+  TableColumnCell,
+  TableColumnHeader,
+  TableRow,
+} from "@/components/Table";
+import { TABLE_PAGE_SIZE } from "@/constants";
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>();
@@ -27,7 +33,6 @@ const Products: React.FC = () => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState<number>(1);
-  const PAGE_SIZE = 10;
   const [totalPages, setTotalPages] = useState<number>(1);
   const didLoadProducts = useRef(false);
   const { showErrorMessage } = useToastMessageService();
@@ -66,11 +71,11 @@ const Products: React.FC = () => {
   const handleGetProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await executeGetProducts(page, PAGE_SIZE);
+      const res = await executeGetProducts(page, TABLE_PAGE_SIZE);
       const items = res?.items ?? [];
       const totalPagesFromRes =
         res?.totalPages ??
-        Math.max(1, Math.ceil((res?.totalCount ?? 0) / PAGE_SIZE));
+        Math.max(1, Math.ceil((res?.totalCount ?? 0) / TABLE_PAGE_SIZE));
 
       // If server returned a different current page, sync it
       if (res?.pageNumber && res.pageNumber !== page) {
@@ -179,47 +184,36 @@ const Products: React.FC = () => {
             wrapperClassName=""
             headers={
               <>
-                <th className="py-3 px-6 text-left hidden sm:table-cell">
+                <TableColumnHeader className="hidden sm:table-cell">
                   SKU ID
-                </th>
-                <th className="py-3 px-6 text-left">Status</th>
-                <th className="py-3 px-6 text-left hidden md:table-cell">
+                </TableColumnHeader>
+                <TableColumnHeader>Status</TableColumnHeader>
+                <TableColumnHeader className="hidden md:table-cell">
                   Barcode
-                </th>
-                <th className="py-3 px-6 text-left">Description</th>
-                <th className="py-3 px-6 text-left">Stock</th>
-                <th className="py-3 px-6 text-left">Price</th>
-                <th className="py-3 px-6 text-center">Actions</th>
+                </TableColumnHeader>
+                <TableColumnHeader>Description</TableColumnHeader>
+                <TableColumnHeader>Stock</TableColumnHeader>
+                <TableColumnHeader>Price</TableColumnHeader>
+                <TableColumnHeader className="text-center">
+                  Actions
+                </TableColumnHeader>
               </>
             }
             body={products?.map((product) => (
-              <tr
-                key={product.id}
-                className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-              >
-                <td className="py-3 px-6 text-left hidden sm:table-cell">
+              <TableRow key={product.id}>
+                <TableColumnCell className="hidden sm:table-cell">
                   {product.skuId}
-                </td>
-                <td className="py-3 px-6 text-left">
-                  <span
-                    className={`py-1 px-3 rounded-full text-xs ${
-                      product.status
-                        ? "bg-green-200 text-green-600"
-                        : "bg-red-200 text-red-600"
-                    }`}
-                  >
-                    {product.status ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="py-3 px-6 text-left hidden md:table-cell">
+                </TableColumnCell>
+                <TableColumnCell>
+                  <TableBooleanBadge value={product.status} />
+                </TableColumnCell>
+                <TableColumnCell className="hidden md:table-cell">
                   {product.barcode}
-                </td>
-                <td className="py-3 px-6 text-left">{product.description}</td>
-                <td className="py-3 px-6 text-left">{product.stock}</td>
-                <td className="py-3 px-6 text-left">
-                  ${product.price.toFixed(2)}
-                </td>
-                <td className="py-3 px-6 text-center">
+                </TableColumnCell>
+                <TableColumnCell>{product.description}</TableColumnCell>
+                <TableColumnCell>{product.stock}</TableColumnCell>
+                <TableColumnCell>${product.price.toFixed(2)}</TableColumnCell>
+                <TableColumnCell className="text-center">
                   <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2">
                     <Button
                       variant="primary"
@@ -234,8 +228,8 @@ const Products: React.FC = () => {
                       className="w-full sm:w-auto py-1 px-2"
                     />
                   </div>
-                </td>
-              </tr>
+                </TableColumnCell>
+              </TableRow>
             ))}
             footer={
               <tr>

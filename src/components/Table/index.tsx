@@ -8,6 +8,70 @@ interface TableProps {
   wrapperClassName?: string;
 }
 
+interface TableColumnHeaderProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface TableColumnCellProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface TableRowProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface TableBooleanBadgeProps {
+  value: boolean;
+  trueLabel?: string;
+  falseLabel?: string;
+}
+
+export const TableColumnHeader: React.FC<TableColumnHeaderProps> = ({
+  children,
+  className = "",
+}) => {
+  return <th className={`py-3 px-6 text-left ${className}`}>{children}</th>;
+};
+
+export const TableColumnCell: React.FC<TableColumnCellProps> = ({
+  children,
+  className = "",
+}) => {
+  return <td className={`py-3 px-6 text-left ${className}`}>{children}</td>;
+};
+
+export const TableRow: React.FC<TableRowProps> = ({
+  children,
+  className = "",
+}) => {
+  return (
+    <tr
+      className={`border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 ${className}`}
+    >
+      {children}
+    </tr>
+  );
+};
+
+export const TableBooleanBadge: React.FC<TableBooleanBadgeProps> = ({
+  value,
+  trueLabel = "Active",
+  falseLabel = "Inactive",
+}) => {
+  return (
+    <span
+      className={`py-1 px-3 rounded-full text-xs ${
+        value ? "bg-green-200 text-green-600" : "bg-red-200 text-red-600"
+      }`}
+    >
+      {value ? trueLabel : falseLabel}
+    </span>
+  );
+};
+
 const Table: React.FC<TableProps> = ({
   headers,
   body,
